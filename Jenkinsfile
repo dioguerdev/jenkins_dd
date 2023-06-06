@@ -1,36 +1,23 @@
+#!/usr/bin/env groovy
+// shebang tells most editors to treat as groovy (syntax highlights, formatting, etc)
+
 pipeline {
-    agent { 
-        node {
-            label 'docker-agent-python'
-            }
-      }
-    triggers {
-        pollSCM'*/5 * * * *'
-    }
+    agent any
+    triggers { pollSCM('* * * * *') }
     stages {
+        // implicit checkout stage
+
         stage('Build') {
             steps {
-                echo "Building.."
-                sh '''
-                echo "doing build stuff.."
-                '''
+                sh './mvnw clean package'
             }
         }
-        stage('Test') {
-            steps {
-                echo "Testing.."
-                sh '''
-                echo "doing test stuff.."
-                '''
-            }
-        }
-        stage('Deliver') {
-            steps {
-                echo 'Deliver....'
-                sh '''
-                echo "doing delivery stuff.."
-                '''
-            }
+    }
+    // post after stages, for entire pipeline, is also an implicit step albeit with explicit config here, unlike implicit checkout stage
+    post {
+        always {
+            junit '**/target/surefire-reports/TEST-*.xml'
+            archiveArtifacts 'target/*.jar'
         }
     }
 }
