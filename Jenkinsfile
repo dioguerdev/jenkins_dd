@@ -4,9 +4,6 @@ pipeline {
             label 'docker-agent-python'
             }
       }
-    triggers {
-        pollSCM'*/5 * * * *'
-    }
     stages {
         stage('Build') {
             steps {
@@ -16,11 +13,19 @@ pipeline {
                 '''
             }
         }
-        stage('Declarative: Post Actions') {
+        stage('Test') {
             steps {
                 echo "Testing.."
                 sh '''
-                echo "doing test stuff.."
+                echo "doing test stuff..
+                '''
+            }
+        }
+        stage('Deliver') {
+            steps {
+                echo 'Deliver....'
+                sh '''
+                echo "doing delivery stuff.."
                 '''
             }
         }
