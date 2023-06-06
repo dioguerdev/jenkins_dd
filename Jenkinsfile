@@ -1,19 +1,28 @@
 pipeline {
-    agent any
-    triggers { pollSCM('* * * * *') }
-    stages {
-        // implicit checkout stage
+    agent { 
+        node {
+            label 'docker-agent-python'
+            }
+      }
+    triggers {
+        pollSCM'*/5 * * * *'
     }
+    stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo "Building.."
+                sh '''
+                echo "doing build stuff.."
+                '''
             }
         }
-    }
-    // post after stages, for entire pipeline, is also an implicit step albeit with explicit config here, unlike implicit checkout stage
-    post {
-        always {
-            echo 'This will always run'
+        stage('Declarative: Post Actions') {
+            steps {
+                echo "Testing.."
+                sh '''
+                echo "doing test stuff.."
+                '''
+            }
         }
     }
 }
